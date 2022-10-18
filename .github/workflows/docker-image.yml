@@ -15,5 +15,6 @@ jobs:
     - name: Build the Docker image
       run: | 
         cd src
+        pwd
         docker build . --file Echarnus.Web/Echarnus.Web/Server/Dockerfile --tag echarn-us:$(date +%s) --tag echarn-us:latest
         
