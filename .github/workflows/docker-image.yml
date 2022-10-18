@@ -13,4 +13,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag echarn-us:$(date +%s) --tag echarn-us:latest
+      run: docker build . --file src/Echarnus.Web/Echarnus.Web/Server/Dockerfile --tag echarn-us:$(date +%s) --tag echarn-us:latest
