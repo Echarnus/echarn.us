@@ -27,3 +27,4 @@ jobs:
           cd src
           docker build . -f Echarnus.Web/Server/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
