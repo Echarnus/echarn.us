@@ -28,3 +28,20 @@ jobs:
           docker build . -f Echarnus.Web/Server/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
+          
+      - name: Update Image Version in the related HelmChart values.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'k8s/deployement-echarn-us-yaml'
+          propertyPath: 'spec.template.spec.containers[0].image'
+          value: ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}
+      
+      - name: 'Push to AKS'
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          
+          
