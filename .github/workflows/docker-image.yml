@@ -3,18 +3,28 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
-  
+          
 jobs:
+  build-and-deploy:
+      runs-on: ubuntu-latest
+      steps:
+      # checkout the repo
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@main
 
-  build:
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: | 
-        cd src
-        pwd
-        docker build . --file Echarnus.Web/Echarnus.Web/Server/Dockerfile --tag echarn-us:$(date +%s) --tag echarn-us:latest
-        
+      - name: 'Build and push image'
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          cd src
+          docker build . -f Echarnus.Web/Server/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
