@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echarnus-deployment
+  labels:
+    app: echarnus-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echarnus
+  template:
+    metadata:
+      labels:
+        app: echarnus
+    spec:
+      containers:
+      - name: echarnus
+        image: placeholder
+        ports:
+        - containerPort: 80
