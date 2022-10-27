@@ -41,10 +41,9 @@ jobs:
         with:
           cmd: yq -i 'spec.template.spec.containers[0].image = ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}' 'k8s/deployement-echarn-us.yaml'
   
-      
-      - name: 'Deploy to Kubernetes cluster'
-        uses: Amadevus/pwsh-script@v2.0.3
-        with: |
-          az aks apply k8s/deployement-echarn-us.yaml
-          az aks apply k8s/service-echarn-us.yaml
-          
+      - name: Upgrade node images
+        uses: Azure/cli@v1.0.0
+        with:
+          inlineScript: |
+            az aks apply k8s/deployement-echarn-us.yaml -n echarnus-prod
+            az aks apply k8s/service-echarn-us.yaml -n echarnus-prod
