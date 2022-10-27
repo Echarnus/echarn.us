@@ -39,12 +39,11 @@ jobs:
       - name: Update deployement yaml
         uses: mikefarah/yq@master
         with:
-          cmd: yq -i 'spec.template.spec.containers[0].image = ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}' 'k8s/deployement-echarn-us-yaml'
+          cmd: yq -i 'spec.template.spec.containers[0].image = ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}' 'k8s/deployement-echarn-us.yaml'
   
       
-      - name: 'Push to AKS'
-        uses: azure/docker-login@v1
-        with:
+      - name: 'Deploy to Kubernetes cluster'
+        uses: Azure/k8s-deploy@v4.5
           login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
