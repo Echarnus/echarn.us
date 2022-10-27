@@ -43,10 +43,8 @@ jobs:
   
       
       - name: 'Deploy to Kubernetes cluster'
-        uses: Azure/k8s-deploy@v4.5
-          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: |
-          
+        uses: Amadevus/pwsh-script@v2.0.3
+        with: |
+          az aks apply k8s/deployement-echarn-us.yaml
+          az aks apply k8s/service-echarn-us.yaml
           
