@@ -36,6 +36,12 @@ jobs:
           propertyPath: 'spec.template.spec.containers[0].image'
           value: ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}
       
+      - name: Update deployement yaml
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i 'spec.template.spec.containers[0].image = ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}' 'k8s/deployement-echarn-us-yaml'
+  
+      
       - name: 'Push to AKS'
         uses: azure/docker-login@v1
         with:
