@@ -32,7 +32,7 @@ jobs:
       - name: Update deployement yaml for Echarn.us
         uses: mikefarah/yq@master
         with:
-          cmd: yq -i '.spec.template.spec.containers[0].image = ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}' 'k8s/deployement-echarn-us.yaml'
+          cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}"' 'k8s/deployement-echarn-us.yaml'
   
       - name: Deploy echarn.us to Kubernetes
         uses: Azure/cli@v1.0.0
