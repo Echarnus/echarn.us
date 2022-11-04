@@ -39,7 +39,7 @@ jobs:
         with:
            resource-group: '${{ secrets.AKS_ResourceGroup }}'
            cluster-name: '${{ secrets.AKS_Service }}'
-           admin: 'false'
+           admin: 'true'
            use-kubelogin: 'true'
 
       - name: Publish to AKS
