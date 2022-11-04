@@ -34,17 +34,10 @@ jobs:
         with:
           cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}"' 'k8s/deployement-echarn-us.yaml'
 
-      - name: Fetch AKS credentials
-        uses: azure/aks-set-context@v3
-        with:
-           resource-group: '${{ secrets.AKS_ResourceGroup }}'
-           cluster-name: '${{ secrets.AKS_Service }}'
-           admin: 'true'
-           use-kubelogin: 'true'
-
       - name: Publish to AKS
         uses: Azure/cli@v1.0.0
         with:
           inlineScript: |
+            az account show
             az aks apply k8s/deployement-echarn-us.yaml -n echarnus-prod
             az aks apply k8s/service-echarn-us.yaml -n echarnus-prod
