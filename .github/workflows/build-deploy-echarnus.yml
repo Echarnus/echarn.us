@@ -50,8 +50,6 @@ jobs:
            cluster-name: '${{ secrets.AKS_Service }}'
 
       - name: Publish to AKS
-        uses: Azure/cli@v1.0.0
-        with:
-          inlineScript: |
+        run: |
             kubectl apply k8s/deployement-echarn-us.yaml -n echarnus-prod
             kubectl apply k8s/service-echarn-us.yaml -n echarnus-prod
