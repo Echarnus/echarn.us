@@ -51,5 +51,5 @@ jobs:
 
       - name: Publish to AKS
         run: |
-            kubectl apply k8s/deployement-echarn-us.yaml -n echarnus-prod
-            kubectl apply k8s/service-echarn-us.yaml -n echarnus-prod
+            kubectl apply -f k8s/deployement-echarn-us.yaml -n echarnus-prod
+            kubectl apply -f k8s/service-echarn-us.yaml -n echarnus-prod
