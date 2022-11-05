@@ -12,20 +12,25 @@ jobs:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
 
-      - name: 'Login via Azure CLI'
+      - name: 'Login to the Azure CLI'
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Build and push image'
+      - name: 'Login to the container registry'
         uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: |
+          
+      - name: Build docker images
+        run: |
           cd src
           docker build . -f Echarnus.Web/Server/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
+        
+      - name: Deploy Docker images
+        run: |
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
       
