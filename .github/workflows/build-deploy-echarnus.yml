@@ -12,31 +12,44 @@ jobs:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
 
-      - name: 'Login via Azure CLI'
+      - name: 'Login to the Azure CLI'
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Build and push image'
+      - name: 'Login to the container registry'
         uses: azure/docker-login@v1
         with:
           login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: |
+          
+      - name: Build docker images
+        run: |
           cd src
           docker build . -f Echarnus.Web/Server/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
+        
+      - name: Deploy Docker images
+        run: |
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:latest
       
       - name: Update deployement yaml for Echarn.us
         uses: mikefarah/yq@master
         with:
-          cmd: yq -i '.spec.template.spec.containers[0].image = ${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}' 'k8s/deployement-echarn-us.yaml'
-  
-      - name: Deploy echarn.us to Kubernetes
-        uses: Azure/cli@v1.0.0
+          cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.REGISTRY_LOGIN_SERVER }}/echarnus:${{ github.sha }}"' 'k8s/deployement-echarn-us.yaml'
+          
+      - name: Setup kubectl
+        id: install-kubectl
+        uses: azure/setup-kubectl@v3
+          
+      - name: Fetch AKS credentials
+        uses: azure/aks-set-context@v3
         with:
-          inlineScript: |
-            az aks apply k8s/deployement-echarn-us.yaml -n echarnus-prod
-            az aks apply k8s/service-echarn-us.yaml -n echarnus-prod
+           resource-group: '${{ secrets.AKS_ResourceGroup }}'
+           cluster-name: '${{ secrets.AKS_Service }}'
+
+      - name: Publish to AKS
+        run: |
+            kubectl apply -f k8s/deployement-echarn-us.yaml -n echarnus-prod
+            kubectl apply -f k8s/service-echarn-us.yaml -n echarnus-prod
